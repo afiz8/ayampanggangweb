@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ayam Panggang Express - Pesan & Kirim via Lalamove</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #ffcc00, #ff6600);
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #d9534f;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .hero {
+      background-image: url('https://images.unsplash.com/photo-1598103442097-8b74394b95c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'); /* Gambar ayam panggang hero yang lebih menarik dan jelas */
+      background-size: cover;
+      background-position: center;
+      height: 300px; /* Ditinggikan sedikit untuk lebih menarik */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.3); /* Overlay gelap untuk membuat teks lebih kontras dan menarik */
+    }
+    .hero h2 {
+      position: relative;
+      z-index: 1;
+    }
+    .menu {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 20px;
+    }
+    .item {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin: 10px;
+      padding: 20px;
+      width: 250px;
+      text-align: center;
+    }
+    .item img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    button {
+      background: #ff6600;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #e55a00;
+    }
+    .order-form {
+      max-width: 600px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .lalamove-btn {
+      display: none;
+      background-color: #f37021;
+      width: 100%;
+      text-align: center;
+      padding: 12px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    .lalamove-btn:hover {
+      background-color: #d85e1b;
+    }
+    .payment-box {
+      background: #fff7e6;
+      border-left: 5px solid #f39c12;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ayam Panggang Express 🍗</h1>
+    <p>Pesan ayam panggang juicy — antar cepat pakai Lalamove!</p>
+  </header>
+
+  <div class="hero">
+    <h2>Ayam Panggang Oven Gurih, Siap Diantar ke Rumahmu!</h2>
+  </div>
+
+  <div class="menu">
+    <div class="item">
+      <img src="https://images.unsplash.com/photo-1598103442097-8b74394b95c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="1 Ekor Ayam Panggang"> <!-- Gambar ayam panggang -->
+      <h3>1 Ekor Ayam Panggang Oven</h3>
+      <p>Rp65.000</p>
+      <button onclick="selectItem('1 Ekor Ayam Panggang Oven', 65000)">Pesan</button>
+    </div>
+    <div class="item">
+      <img src="https://images.unsplash.com/photo-1598103442097-8b74394b95c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Setengah Ekor Ayam Panggang"> <!-- Gambar ayam panggang yang benar untuk setengah ekor -->
+      <h3>Setengah Ekor Ayam Panggang Oven</h3>
+      <p>Rp33.000</p>
+      <button onclick="selectItem('Setengah Ekor Ayam Panggang Oven', 33000)">Pesan</button>
+    </div>
+  </div>
+
+  <div class="order-form">
+    <h2>Form Pemesanan</h2>
+    <form id="orderForm">
+      <label>Nama:</label>
+      <input type="text" id="name" required>
+
+      <label>Alamat Pengiriman:</label>
+      <input type="text" id="address" required placeholder="Contoh: Jl. Pahlawan No. 7, Kalideres">
+
+      <label>Jumlah:</label>
+      <input type="number" id="quantity" min="1" required>
+
+      <label>Opsi Pengiriman:</label>
+      <select id="delivery">
+        <option value="lalamove">Lalamove - Sesuai jarak</option>
+        <option value="pickup">Ambil Sendiri (Gratis)</option>
+      </select>
+
+      <p id="orderSummary" style="margin-top:10px; font-weight:bold;"></p>
+
+      <button type="submit">Lanjut ke Pembayaran</button>
+    </form>
+
+    <div class="payment-box" id="paymentBox" style="display:none;">
+      <h3>💳 Pembayaran via Transfer Bank</h3>
+      <p><strong>BCA:</strong> 8660454722 (a/n Afiz Hasyim Musyafa)</p>
+      <p>Silakan transfer sesuai total pesanan Anda.</p>
+      <p><strong>Setelah transfer, klik tombol Lalamove di bawah untuk antar pesanan Anda 🚗</strong></p>
+    </div>
+
+    <div id="lalamoveButton" class="lalamove-btn" onclick="callLalamove()">
+      🚗 Panggil Kurir Lalamove Sekarang
+    </div>
+  </div>
+
+  <script>
+    let selectedItem = null;
+    let selectedPrice = 0;
+
+    function selectItem(item, price) {
+      selectedItem = item;
+      selectedPrice = price;
+      alert(`${item} dipilih! Silakan isi form pemesanan di bawah.`);
+      window.scrollTo({ top: document.querySelector('.order-form').offsetTop, behavior: 'smooth' });
+    }
+
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (!selectedItem) {
+        alert("Pilih menu ayam panggang dulu ya 🍗");
+        return;
+      }
+
+      const name = document.getElementById('name').value;
+      const address = document.getElementById('address').value;
+      const quantity = parseInt(document.getElementById('quantity').value);
+      const delivery = document.getElementById('delivery').value;
+
+      const total = selectedPrice * quantity;
+
+      document.getElementById('orderSummary').textContent =
+        `Pesanan: ${selectedItem} x ${quantity} = Rp${total.toLocaleString()}`;
+
+      document.getElementById('paymentBox').style.display = 'block';
+
+      if (delivery === 'lalamove') {
+        document.getElementById('lalamoveButton').style.display = 'block';
+      } else {
+        document.getElementById('lalamoveButton').style.display = 'none';
+        alert("Pesanan siap diambil di Warung Ayam Panggang Express 🍗");
+      }
+    });
+
+    function callLalamove() {
+      const name = document.getElementById('name').value;
+      const address = document.getElementById('address').value;
+      const quantity = document.getElementById('quantity').value;
+
+      const message = `Halo Lalamove! Tolong ambil pesanan dari Warung Ayam Panggang Express (Kalideres).\n\nPesanan untuk:\nNama: ${name}\nAlamat: ${address}\nJumlah: ${quantity}\nMenu: ${selectedItem}.`;
+
+      window.open(`https://www.lalamove.com/id/jakarta?text=${encodeURIComponent(message)}`, "_blank");
+    }
+  </script>
+</body>
+</html>
